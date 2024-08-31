@@ -1,7 +1,9 @@
-# Surrealdb + React Native
+# React Native + Surrealdb + React Query
 
 ```
-npm i surrealdb.js tiny-invariant
+npm i surrealdb.js tiny-invariant \
+@react-native-community/netinfo @tanstack/react-query @dev-plugins/react-query
+
 npm i -D @sebastianwessel/surql-gen
 ```
 
@@ -64,5 +66,50 @@ export function getSurrealdbClient() {
 	});
 
 	return client;
+}
+```
+
+
+`./app/_layout.tsx`
+```tsx
+import '../global.css';
+import {
+	onlineManager,
+	QueryClient,
+	QueryClientProvider,
+} from '@tanstack/react-query';
+import { SplashScreen, Stack } from 'expo-router';
+import NetInfo from '@react-native-community/netinfo';
+
+SplashScreen.preventAutoHideAsync();
+
+onlineManager.setEventListener((setOnline) => {
+	return NetInfo.addEventListener((state) => {
+		setOnline(!!state.isConnected);
+	});
+});
+
+const queryClient = new QueryClient({
+	defaultOptions: {
+		queries: {
+			staleTime: Infinity,
+			refetchOnWindowFocus: 'always',
+		},
+	},
+});
+
+
+export default function RootLayout() {
+	return (
+		<QueryClientProvider client={queryClient}>
+			<Layout />
+		</QueryClientProvider>
+	);
+}
+
+function Layout() {
+	return (
+		<Stack />
+	);
 }
 ```
