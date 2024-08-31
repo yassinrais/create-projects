@@ -83,7 +83,7 @@ export default useSurrealdb;
 ---
 `./app/_layout.tsx`
 ```tsx
-import '../global.css';
+// import '../global.css';
 import {
 	onlineManager,
 	QueryClient,
