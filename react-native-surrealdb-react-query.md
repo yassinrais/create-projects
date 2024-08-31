@@ -1,4 +1,4 @@
-# React Native + Surrealdb + React Query
+# React Native + Expo Router + Surrealdb + React Query
 
 ```
 npm i surrealdb.js tiny-invariant \
@@ -6,14 +6,14 @@ npm i surrealdb.js tiny-invariant \
 
 npm i -D @sebastianwessel/surql-gen
 ```
-
+---
 `./.env`
 ```
 EXPO_PUBLIC_SURREALDB_DATABASE=example-db
 EXPO_PUBLIC_SURREALDB_NAMESPACE=example-ns
 EXPO_PUBLIC_SURREALDB_URL=http://localhost:8000/rpc
 ```
-
+---
 `./surql-gen.json`
 ```json
 {
@@ -26,7 +26,7 @@ EXPO_PUBLIC_SURREALDB_URL=http://localhost:8000/rpc
 	"lib": "surrealdb.js"
 }
 ```
-
+---
 add this script to your 
 `./package.json`
 ```json
@@ -36,7 +36,7 @@ add this script to your
   }
 }
 ```
-
+---
 `./api/index.ts`
 ```ts
 export * from './generated/schema/index';
@@ -68,8 +68,19 @@ export function getSurrealdbClient() {
 	return client;
 }
 ```
+---
+`./hooks/useSurrealdb.ts`
+```tsx
+import { useMemo } from 'react';
+import { getSurrealdbClient } from '../api/index';
 
+function useSurrealdb() {
+	return useMemo(getSurrealdbClient, []);
+}
 
+export default useSurrealdb;
+```
+---
 `./app/_layout.tsx`
 ```tsx
 import '../global.css';
