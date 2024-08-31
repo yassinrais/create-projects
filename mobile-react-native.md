@@ -1,4 +1,4 @@
-# Mobile: Expo Router + Nativewind + React Query
+# React Native + Expo Router + Nativewind + React Query
 
 ```
 npx create-expo-app@latest
@@ -6,7 +6,7 @@ npx create-expo-app@latest
 
 ```
 npx expo install nativewind@^4.0.1 react-native-reanimated tailwindcss \
-@tanstack/react-query @dev-plugins/react-query
+@react-native-community/netinfo @tanstack/react-query @dev-plugins/react-query
 ```
 
 ```
@@ -74,14 +74,6 @@ const config = getDefaultConfig(__dirname);
 module.exports = withNativeWind(config, { input: './global.css' });
 ```
 ---
-`./app/_layout.tsx`
-```ts
-import { Slot } from 'expo-router';
-import '../global.css';
-
-export default Slot;
-```
----
 `./nativewind-env.d.ts`
 ```ts
 /// <reference types="nativewind/types" />
@@ -97,5 +89,46 @@ export default function Index() {
 			<Text>Background should be green.</Text>
 		</View>
 	);
+}
+```
+---
+`./app/_layout.tsx`
+```ts
+import '../global.css';
+import {
+	onlineManager,
+	QueryClient,
+	QueryClientProvider,
+} from '@tanstack/react-query';
+import { SplashScreen, Stack } from 'expo-router';
+import NetInfo from '@react-native-community/netinfo';
+
+SplashScreen.preventAutoHideAsync();
+
+onlineManager.setEventListener((setOnline) => {
+	return NetInfo.addEventListener((state) => {
+		setOnline(!!state.isConnected);
+	});
+});
+
+const queryClient = new QueryClient({
+	defaultOptions: {
+		queries: {
+			staleTime: Infinity,
+			refetchOnWindowFocus: 'always',
+		},
+	},
+});
+
+export default function RootLayout() {
+	return (
+		<QueryClientProvider client={queryClient}>
+			<Layout />
+		</QueryClientProvider>
+	);
+}
+
+function Layout() {
+	return <Stack />;
 }
 ```
